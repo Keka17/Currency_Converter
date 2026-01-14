@@ -1,5 +1,5 @@
 from database import engine
-from app.models.models import Base, User
+from app.models.models import Base, User, RevokedToken
 
 
 def create_tables():
