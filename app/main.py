@@ -1,5 +1,10 @@
 from fastapi import FastAPI
+from fastapi.exceptions import RequestValidationError
 
+from app.routers import auth
+from app.exceptions.base import AppException
+from app.handlers.exceptions import app_exception_handler
+from app.handlers.validation_errors import validation_exception_handler
 from app.middlewares.logs import loguru_middleware
 from loguru import logger
 import sys
@@ -46,6 +51,10 @@ logger.add(
 app = FastAPI()
 
 app.middleware("http")(loguru_middleware)
+app.add_exception_handler(AppException, app_exception_handler)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
+
+app.include_router(auth.router)
 
 
 @app.get("/")

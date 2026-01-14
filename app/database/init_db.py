@@ -1,6 +1,7 @@
 from database import engine
 from app.models.models import Base, User
 
+
 def create_tables():
     """
     Creates all tables in the database on SQLAlchemy models.
