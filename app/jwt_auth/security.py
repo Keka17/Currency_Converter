@@ -4,8 +4,10 @@ import os
 from dotenv import load_dotenv
 import datetime
 from datetime import timedelta
-from fastapi import Depends, HTTPException
+from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
+
+from app.exceptions.tokens import TokenExpiredException, InvalidTokenException
 
 load_dotenv()
 
@@ -60,6 +62,6 @@ def decode_jwt_token(token: str = Depends(oauth2_scheme)) -> dict:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
     except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
+        raise TokenExpiredException()
     except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Invalid token")
+        raise InvalidTokenException()

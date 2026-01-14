@@ -2,7 +2,7 @@ import jwt
 from fastapi import APIRouter, Depends, HTTPException, Header
 import bcrypt
 import datetime
-from jwt import PyJWT, PyJWTError
+from jwt import PyJWTError
 from starlette.responses import JSONResponse
 
 from app.database.database import get_db_connection
@@ -12,6 +12,11 @@ from app.exceptions.users import (
     UserNotFoundException,
     UserAlreadyExistsException,
     InvalidCredentialsException,
+)
+from app.exceptions.tokens import (
+    InvalidTokenException,
+    InvalidTokenTypeException,
+    TokenRevokedException,
 )
 from app.jwt_auth.security import (
     create_access_token,
@@ -101,9 +106,7 @@ async def user_info(payload: dict = Depends(decode_jwt_token)):
     Only accessible with a valid Access Token in the Authorization header.
     """
     if payload.get("token_type") != "access":
-        raise HTTPException(
-            status_code=401, detail="Invalid token type: access required."
-        )
+        raise InvalidTokenTypeException(expected_type="access")
 
     username: str = payload.get("sub")
 
@@ -122,17 +125,17 @@ async def refresh_token(
     try:
         payload = jwt.decode(x_refresh_token, SECRET_KEY, algorithms=[ALGORITHM])
     except PyJWTError:
-        raise HTTPException(status_code=401, detail="Invalid refresh token")
+        raise InvalidTokenException()
 
     if payload.get("token_type") != "refresh":
-        raise HTTPException(status_code=401, detail="Invalid token type")
+        raise InvalidTokenTypeException(expected_type="refresh")
 
     # Check the unique token ID in the revoked token database
     jti = payload.get("jti")
     is_revoked = db.query(RevokedToken).filter(RevokedToken.jti == jti).first()
 
     if is_revoked:
-        raise HTTPException(status_code=401, detail="Token has been revoked")
+        raise TokenRevokedException()
 
     # Revoke the current refresh token and add it to the database.
     expire_timestamp = payload.get("exp")
