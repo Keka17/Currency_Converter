@@ -30,6 +30,6 @@ class RevokedToken(Base):
     jti: Mapped[str] = mapped_column(
         unique=True, nullable=False, index=True
     )  # JTI (JWT ID) is a unique identifier for the toke
-    expired_at: Mapped[datetime] = mapped_column(
+    expires_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False
     )  # Drop with celery, later

@@ -10,3 +10,5 @@ pytest_cache/
 
 .DS_Store
 .idea
+
+celerybeat-schedule.db

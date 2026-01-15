@@ -1,5 +1,5 @@
 import jwt
-from fastapi import APIRouter, Depends, HTTPException, Header
+from fastapi import APIRouter, Depends, Header
 import bcrypt
 import datetime
 from jwt import PyJWTError
@@ -141,7 +141,7 @@ async def refresh_token(
     expire_timestamp = payload.get("exp")
     revoked_entry = RevokedToken(
         jti=jti,
-        expired_at=datetime.datetime.fromtimestamp(expire_timestamp, tz=datetime.UTC),
+        expires_at=datetime.datetime.fromtimestamp(expire_timestamp, tz=datetime.UTC),
     )
     db.add(revoked_entry)
 
@@ -176,7 +176,7 @@ async def logout(
         db.add(
             RevokedToken(
                 jti=jti,
-                expired_at=datetime.datetime.fromtimestamp(exp, tz=datetime.UTC),
+                expires_at=datetime.datetime.fromtimestamp(exp, tz=datetime.UTC),
             )
         )
         db.commit()

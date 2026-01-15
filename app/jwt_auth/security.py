@@ -14,7 +14,7 @@ load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
-REFRESH_TOKEN_EXPIRE_DAYS = 7
+REFRESH_TOKEN_EXPIRE_MINUTES = 5
 
 
 def create_jwt_token(
@@ -46,7 +46,10 @@ def create_access_token(data: dict):
 def create_refresh_token(data: dict):
     """Creates refresh-type JWT token"""
     return create_jwt_token(
-        data, timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS), "refresh", include_jti=True
+        data,
+        timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES),
+        "refresh",
+        include_jti=True,
     )
 
 
