@@ -12,4 +12,4 @@ def get_actual_rates_data():
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
 
-    return data["data"]
+    return data["rates"]

@@ -1,8 +1,9 @@
+from datetime import timedelta
+
 from celery import Celery
 from celery.schedules import crontab
 from .revoked_token_tasks import cleanup_expired_tokens
 from .exchange_rate_api import get_actual_rates
-from datetime import timedelta
 
 """
 Celery settings for asynchronous task processing and scheduled tasks.
@@ -28,7 +29,7 @@ celery_app.conf.beat_schedule = {
     "exchange_rate_api": {
         "task": get_actual_rates.name,
         # "schedule": crontab(minute='*/2'),  # Launch every 2 minutes (for testing)
-        "schedule": crontab(hour=0, minute=0),  # Launch every midnight
+        "schedule": timedelta(hours=3),  # Launch every 3 hours
     },
 }
 

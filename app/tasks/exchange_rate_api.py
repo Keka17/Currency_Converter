@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 API_KEY = os.getenv("API_KEY")
-EXTERNAL_API_URL = "https://api.currencyapi.com/v3/latest"
+EXTERNAL_API_URL = "https://currencyapi.net/api/v1/rates"
 
 
 @shared_task(ignore_results=True)
@@ -15,11 +15,11 @@ def get_actual_rates():
     """
     Periodic task for retrieving current exchange rates via an API request.
     The request data is saved in a JSON-file.
-    Runs every 12 hours by the Celery Beat service.
+    Runs every 3 hours by the Celery Beat service.
     """
-    headers = {"apikey": API_KEY}
+    params = {"key": API_KEY, "base": "USD", "output": "JSON"}
 
-    response = requests.request("GET", EXTERNAL_API_URL, headers=headers)
+    response = requests.get(EXTERNAL_API_URL, params=params)
 
     if response.status_code == 200:
         data = response.json()

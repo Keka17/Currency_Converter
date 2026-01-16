@@ -3,82 +3,37 @@ import iso4217parse
 from app.utils.actual_rates import get_actual_rates_data
 
 CORRECT_NAMES = {
-    "ADA": "Cardano (cryptocurrency)",
     "ANG": "Netherlands Antillean Guilder",
-    "AVAX": "Avalanche (cryptocurrency)",
-    "ARB": "Argentine Peso (offshore rate)",
-    "BNB": "Binance Coin (cryptocurrency)",
+    "BCH": "Bitcoin Cash (cryptocurrency)",
     "BTC": "Bitcoin (cryptocurrency)",
-    "BYR": "Belarusian Ruble (old)",
-    "DAI": "DAI (stablecoin)",
-    "DOT": "Polkadot (cryptocurrency)",
+    "BTG": "Bitcoin Gold",
+    "DASH": "Dash (cryptocurrency)",
+    "EOS": "Eos (cryptocurrency)",
     "ETH": "Ethereum (cryptocurrency)",
     "LTC": "Litecoin (cryptocurrency)",
-    "LTL": "Lithuanian Litas",
-    "LVL": "Latvian Lats",
-    "MATIC": "Polygon (cryptocurrency)",
-    "MRO": "Mauritanian ouguiya (old)",
-    "MRU": "Mauritanian ouguiya",
-    "OP": "Optimism (cryptocurrency)",
-    "SLE": "Sierra Leonean Leone",
-    "SLL": "Sierra Leonean Leone (old)",
-    "SOL": "Solana (cryptocurrency)",
-    "STD": "Sao Tome and Principe Dobra (old)",
-    "STN": "Sao Tome and Principe Dobra",
-    "TRX": "TRON (cryptocurrency)",
-    "USDC": "USD Coin (stablecoin)",
-    "USDT": "Tether (stablecoin)",
-    "VEF": "Venezuelan Bolivar (old)",
-    "VES": "Venezuelan Bolivar",
-    "XAF": "Central African CFA Franc",
+    "XAF": "Central African CFA franc",
     "XAG": "Silver (one troy ounce)",
     "XAU": "Gold (one troy ounce)",
     "XCD": "East Caribbean dollar",
-    "XCG": "East Caribbean Guilder",
-    "XDR": "Special drawing rights",
+    "XLM": "Stellar Lumens (cryptocurrency)",
     "XOF": "West African CFA Franc",
-    "XPD": "Palladium (one troy ounce)",
-    "XPF": "CFP franc (franc Pacifique)",
-    "XPT": "Platinum (one troy ounce)",
     "XRP": "Ripple (cryptocurrency)",
-    "ZMK": "Zambian Kwacha (old)",
-    "ZMW": "Zambian kwacha",
-    "ZWG": "Zimbabwe Gold",
-    "ZWL": "Zimbabwean dollar",
 }
 
 
 def get_flag_from_currency(currency_code):
     """
     Returns flag emoji based on ISO 4217 code.
-    Crypto, stablecoins are not processed by the library
     """
 
-    # Manual exceptions here
-    crypto = [
-        "ADA",
-        "AVAX",
-        "BNB",
-        "BTC",
-        "DOT",
-        "ETH",
-        "LTC",
-        "MATIC",
-        "OP",
-        "SOL",
-        "TRX",
-        "XRP",
-    ]
-    stablecoin = ["DAI", "USDC", "USDT"]
+    # Manual exceptions
+    crypto = ["BCH", "BTC", "DASH", "EOS", "ETH", "LTC", "XLM", "XRP"]
 
     if currency_code == "EUR":
         return "🇪🇺"
 
     if currency_code in crypto:
         return "💻"
-
-    if currency_code in stablecoin:
-        return "💰"
 
     country_code = currency_code[:2]  # Works for national currencies only (USD -> US)
 

@@ -93,8 +93,8 @@ async def currency_converter(
     if code_1 not in codes_list or code_2 not in codes_list:
         raise InvalidCurrencyCodeException()
 
-    x = rates_data[code_1]["value"]
-    y = rates_data[code_2]["value"]
+    x = rates_data[code_1]
+    y = rates_data[code_2]
 
     ratio = y / x
 
