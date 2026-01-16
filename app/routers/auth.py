@@ -80,7 +80,7 @@ async def login(user_in: UserLogin, db: Session = Depends(get_db_connection)):
     """
     user = get_user_from_db(user_in.username, db)
 
-    if user is None:
+    if not user:
         raise UserNotFoundException()
 
     if not bcrypt.checkpw(
