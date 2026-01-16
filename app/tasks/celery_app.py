@@ -27,8 +27,8 @@ celery_app.conf.beat_schedule = {
     },
     "exchange_rate_api": {
         "task": get_actual_rates.name,
-        # "schedule": crontab(minute='*/2'), Launch every 2 minutes (for testing)
-        "schedule": timedelta(hours=12),  # Launch 12 hours after the last request
+        # "schedule": crontab(minute='*/2'),  # Launch every 2 minutes (for testing)
+        "schedule": crontab(hour=0, minute=0),  # Launch every midnight
     },
 }
 

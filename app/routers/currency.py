@@ -6,6 +6,7 @@ from app.jwt_auth.security import decode_jwt_token
 from app.utils.codes_names import get_codes_names
 from app.utils.actual_rates import get_actual_rates_data
 from app.exceptions.currency import InvalidCurrencyCodeException
+from app.schemas.currency import Converter
 
 
 router = APIRouter(prefix="/currency", tags=["Currency"])
@@ -69,3 +70,32 @@ async def get_actual_rate(
         "message": f"Current {code} to dollar exchange rate (1 USD = value {code})",
         "rate": specified_rate,
     }
+
+
+@router.post("/converter")
+async def currency_converter(
+    data: Converter, payload: dict = Depends(decode_jwt_token)
+):
+
+    if payload.get("token_type") != "access":
+        raise InvalidTokenTypeException(expected_type="access")
+
+    rates_data = get_actual_rates_data()
+
+    codes_list = list(rates_data.keys())
+
+    # lowercase letters proccessing
+    code_1 = data.code_1.upper()
+    code_2 = data.code_2.upper()
+
+    k = data.k
+
+    if code_1 not in codes_list or code_2 not in codes_list:
+        raise InvalidCurrencyCodeException()
+
+    x = rates_data[code_1]["value"]
+    y = rates_data[code_2]["value"]
+
+    ratio = y / x
+
+    return {"message": f"{k} {code_1} - {round(k * ratio, 3):,} {code_2}"}
