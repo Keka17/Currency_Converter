@@ -8,11 +8,11 @@ from starlette.responses import JSONResponse
 from app.database.database import get_db_connection
 from app.schemas.users import UserCreate, UserLogin, User as UserChema
 from app.models.models import RevokedToken, User as UserModel
-from app.exceptions.users import (
+from app.exceptions.auth import (
     UserNotFoundException,
     UserAlreadyExistsException,
     InvalidCredentialsException,
-    AdminAccessRequired
+    AdminAccessRequired,
 )
 from app.exceptions.tokens import (
     InvalidTokenException,
@@ -145,6 +145,7 @@ async def logout(
     """
     try:
         payload = jwt.decode(x_refresh_token, SECRET_KEY, algorithms=[ALGORITHM])
+
         jti = payload.get("jti")
         exp = payload.get("exp")
 
@@ -157,14 +158,14 @@ async def logout(
         )
         db.commit()
     except:
-        pass
+        raise InvalidTokenException()
 
     return {"message": "Logged out successfully"}
 
 
-@router.get("/current_user")
-async def get_current_user(payload: dict = Depends(decode_jwt_token),
-                    db: Session = Depends(get_db_connection)):
+def get_current_user(
+    payload: dict = Depends(decode_jwt_token), db: Session = Depends(get_db_connection)
+):
     """
     Retrieves the profile of the currently authenticated user by decoding JWT token.
     Only accessible with a valid Access Token in the Authorization header.
@@ -197,8 +198,10 @@ def admin_required(current_user: UserModel = Depends(get_current_user)):
 
 @router.get("/users", response_model=list[UserChema])
 async def get_users(
-    skip: int = 0, limit: int = 15, db: Session = Depends(get_db_connection),
-        admin: UserModel = Depends(admin_required)
+    skip: int = 0,
+    limit: int = 15,
+    db: Session = Depends(get_db_connection),
+    admin: UserModel = Depends(admin_required),
 ):
     """
     Extract all users from the database.

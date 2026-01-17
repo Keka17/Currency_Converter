@@ -25,5 +25,7 @@ class InvalidCredentialsException(AppException):
 class AdminAccessRequired(AppException):
     def __init__(self):
         super().__init__(
-            status_code=403, message="Forbidden: admin access required", error_code="FORBIDDEN"
+            status_code=403,
+            message="Forbidden: admin access required",
+            error_code="FORBIDDEN",
         )
