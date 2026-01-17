@@ -12,13 +12,14 @@ from app.exceptions.users import (
     UserNotFoundException,
     UserAlreadyExistsException,
     InvalidCredentialsException,
+    AdminAccessRequired
 )
 from app.exceptions.tokens import (
     InvalidTokenException,
     InvalidTokenTypeException,
     TokenRevokedException,
 )
-from app.jwt_auth.security import (
+from app.dependencies.security import (
     create_access_token,
     create_refresh_token,
     decode_jwt_token,
@@ -27,7 +28,7 @@ from app.jwt_auth.security import (
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 
-from app.jwt_auth.security import SECRET_KEY, ALGORITHM
+from app.dependencies.security import SECRET_KEY, ALGORITHM
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -53,17 +54,6 @@ async def create_user(user: UserCreate, db: Session = Depends(get_db_connection)
     return JSONResponse(
         status_code=201, content={"message": "You have successfully registered! 😊"}
     )
-
-
-@router.get("/users", response_model=list[UserChema])
-async def get_users(
-    skip: int = 0, limit: int = 15, db: Session = Depends(get_db_connection)
-):
-    """
-    Extracting all users from the database.
-    Query parameters: skip, limit.
-    """
-    return db.query(UserModel).offset(skip).limit(limit).all()
 
 
 def get_user_from_db(username: str, db: Session):
@@ -97,20 +87,6 @@ async def login(user_in: UserLogin, db: Session = Depends(get_db_connection)):
         "token_type": "bearer",
         "sub": user_in.username,
     }
-
-
-@router.get("/protected")
-async def user_info(payload: dict = Depends(decode_jwt_token)):
-    """
-    Example of a secure endpoint.
-    Only accessible with a valid Access Token in the Authorization header.
-    """
-    if payload.get("token_type") != "access":
-        raise InvalidTokenTypeException(expected_type="access")
-
-    username: str = payload.get("sub")
-
-    return {"message": f"Success! Welcome, {username} 🤩"}
 
 
 @router.post("/refresh")
@@ -184,3 +160,49 @@ async def logout(
         pass
 
     return {"message": "Logged out successfully"}
+
+
+@router.get("/current_user")
+async def get_current_user(payload: dict = Depends(decode_jwt_token),
+                    db: Session = Depends(get_db_connection)):
+    """
+    Retrieves the profile of the currently authenticated user by decoding JWT token.
+    Only accessible with a valid Access Token in the Authorization header.
+    """
+    if payload.get("token_type") != "access":
+        raise InvalidTokenTypeException(expected_type="access")
+
+    username: str = payload.get("sub")
+
+    if not username:
+        raise InvalidTokenException()
+
+    user = get_user_from_db(username, db)
+
+    if not user:
+        raise UserNotFoundException()
+
+    return user
+
+
+def admin_required(current_user: UserModel = Depends(get_current_user)):
+    """
+    Check if the authenticated user has the 'is_admin' flag set to True.
+    """
+    if not current_user.is_admin:
+        raise AdminAccessRequired()
+
+    return current_user
+
+
+@router.get("/users", response_model=list[UserChema])
+async def get_users(
+    skip: int = 0, limit: int = 15, db: Session = Depends(get_db_connection),
+        admin: UserModel = Depends(admin_required)
+):
+    """
+    Extract all users from the database.
+    This endpoint is allowed to users with administrative privileges only.
+    Query parameters: skip, limit.
+    """
+    return db.query(UserModel).offset(skip).limit(limit).all()

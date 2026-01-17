@@ -20,3 +20,10 @@ class InvalidCredentialsException(AppException):
         super().__init__(
             status_code=401, message="Invalid credentials", error_code="UNAUTHORIZED"
         )
+
+
+class AdminAccessRequired(AppException):
+    def __init__(self):
+        super().__init__(
+            status_code=403, message="Forbidden: admin access required", error_code="FORBIDDEN"
+        )
