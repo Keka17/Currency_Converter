@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Depends
-from redis.commands.search.query import Query
+from fastapi import APIRouter, Depends, Query
+from typing import Annotated, List
 
 from app.exceptions.tokens import InvalidTokenTypeException
 from app.jwt_auth.security import decode_jwt_token
@@ -47,11 +47,12 @@ async def get_actual_rates(payload: dict = Depends(decode_jwt_token)):
 
 @router.get("/actual_rate")
 async def get_actual_rate(
-    code: str = Query(None), payload: dict = Depends(decode_jwt_token)
+    codes: Annotated[List[str] | None, Query()] = None,
+    payload: dict = Depends(decode_jwt_token),
 ):
     """
-    Returns the current exchange rate of the specified currency relative to the USD.
-    Request parameter: currency code.
+    Returns the current exchange rate of the specified currency/ies relative to the USD.
+    Request parameter: list of currency/ies code/s.
     Only accessible with a valid Access Token in the Authorization header.
     """
     if payload.get("token_type") != "access":
@@ -61,14 +62,19 @@ async def get_actual_rate(
 
     codes_list = list(rates_data.keys())
 
-    if code not in codes_list:
-        raise InvalidCurrencyCodeException()
+    invalid_codes = []
+    for code in codes:
+        if code not in codes_list:
+            invalid_codes.append(code)
 
-    specified_rate = rates_data[code]
+    if invalid_codes:
+        raise InvalidCurrencyCodeException(invalid_codes=invalid_codes)
+
+    specified_rates = {c: rates_data[c] for c in codes if c in rates_data}
 
     return {
-        "message": f"Current {code} to dollar exchange rate (1 USD = value {code})",
-        "rate": specified_rate,
+        "message": f"Current {codes} to dollar exchange rate",
+        "rate": specified_rates,
     }
 
 
@@ -76,6 +82,14 @@ async def get_actual_rate(
 async def currency_converter(
     data: Converter, payload: dict = Depends(decode_jwt_token)
 ):
+    """
+    Converts one currency to another.
+    Parameters:
+    code_1: name of the currency to find out the price of;
+    code_2: name of the currency to find out the price of
+    the first currency in;
+    k: amount of the first currency.
+    """
 
     if payload.get("token_type") != "access":
         raise InvalidTokenTypeException(expected_type="access")
