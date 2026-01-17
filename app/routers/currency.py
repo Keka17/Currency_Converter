@@ -53,6 +53,7 @@ async def get_actual_rate(
     """
     Returns the current exchange rate of the specified currency/ies relative to the USD.
     Request parameter: list of currency/ies code/s.
+
     Only accessible with a valid Access Token in the Authorization header.
     """
     if payload.get("token_type") != "access":
@@ -89,6 +90,8 @@ async def currency_converter(
     code_2: name of the currency to find out the price of
     the first currency in;
     k: amount of the first currency.
+
+    Only accessible with a valid Access Token in the Authorization header.
     """
 
     if payload.get("token_type") != "access":
@@ -103,9 +106,15 @@ async def currency_converter(
     code_2 = data.code_2.upper()
 
     k = data.k
+    invalid_codes = []
+    codes = [code_1, code_2]
 
-    if code_1 not in codes_list or code_2 not in codes_list:
-        raise InvalidCurrencyCodeException()
+    for code in codes:
+        if code not in codes_list:
+            invalid_codes.append(code)
+
+    if invalid_codes:
+        raise InvalidCurrencyCodeException(invalid_codes=invalid_codes)
 
     x = rates_data[code_1]
     y = rates_data[code_2]
