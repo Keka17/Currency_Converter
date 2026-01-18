@@ -66,6 +66,7 @@ __4. Автоматизация__:
 ## Конфигурация
 Приложение использует `pydantic-settings` для управления конфигами. Для корректной работы создайте файл __.env__ в корневом каталоге и заполните его:
 
+```bash
 DATABASE_URL = postgresql://{username}:{password}@{host}/{database_name}
 
 TEST_DATABASE_URL = postgresql://{username}:{password}@{host}/{test_database_name}
@@ -73,6 +74,7 @@ TEST_DATABASE_URL = postgresql://{username}:{password}@{host}/{test_database_nam
 SECRET_KEY = very_secret_key (генерируется командой openssl rand -hex 32)
 
 API_KEY= your_api_key
+```
 
 ## Запуск приложения
 
