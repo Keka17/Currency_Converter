@@ -9,11 +9,10 @@ from app.middlewares.logs import loguru_middleware
 from loguru import logger
 import sys
 
-
-# Удаляем стандартный обработчик
+# Remove the default logger
 logger.remove()
 
-# Логи для консоли
+# Console logs
 logger.add(
     sys.stderr,
     level="DEBUG",
@@ -21,7 +20,7 @@ logger.add(
     colorize=True,
 )
 
-# Логи разных уровней
+# Different levels logs
 logger.add(
     "logs/app.log",
     level="INFO",

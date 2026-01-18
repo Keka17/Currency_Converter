@@ -6,7 +6,7 @@ from tests.conftest import db_session
 from tests.utils import add_users
 
 import jwt
-from app.dependencies.security import (
+from app.core.security import (
     SECRET_KEY,
     ALGORITHM,
     create_access_token,

@@ -5,8 +5,11 @@ import json
 from dotenv import load_dotenv
 
 load_dotenv()
+from app.core.config import get_settings
 
-API_KEY = os.getenv("API_KEY")
+settings = get_settings()
+
+API_KEY = settings.API_KEY
 EXTERNAL_API_URL = "https://currencyapi.net/api/v1/rates"
 
 

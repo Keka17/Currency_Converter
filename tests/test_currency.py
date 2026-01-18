@@ -3,7 +3,7 @@ from unittest.mock import patch, mock_open, MagicMock
 from app.tasks.exchange_rate_api import get_actual_rates
 from app.main import app
 from fastapi.testclient import TestClient
-from app.dependencies.security import decode_jwt_token
+from app.core.security import decode_jwt_token
 
 client = TestClient(app)
 

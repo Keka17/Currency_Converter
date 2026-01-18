@@ -4,7 +4,9 @@ from celery import Celery
 from celery.schedules import crontab
 from .revoked_token_tasks import cleanup_expired_tokens
 from .exchange_rate_api import get_actual_rates
+from app.core.config import get_settings
 
+settings = get_settings()
 """
 Celery settings for asynchronous task processing and scheduled tasks.
 
@@ -13,7 +15,7 @@ Redis is used as:
 - a backendfor storing results, which keeps track of task execution status.
 """
 celery_app = Celery(
-    "worker", broker="redis://localhost:6379/0", backend="redis://localhost:6379/0"
+    "worker", broker=settings.REDIS_URL, backend=settings.REDIS_URL
 )
 
 celery_app.autodiscover_tasks(["app.tasks"])

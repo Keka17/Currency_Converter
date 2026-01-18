@@ -19,7 +19,7 @@ from app.exceptions.tokens import (
     InvalidTokenTypeException,
     TokenRevokedException,
 )
-from app.dependencies.security import (
+from app.core.security import (
     create_access_token,
     create_refresh_token,
     decode_jwt_token,
@@ -28,10 +28,14 @@ from app.dependencies.security import (
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 
-from app.dependencies.security import SECRET_KEY, ALGORITHM
+from app.core.config import get_settings
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
+settings = get_settings()
+
+SECRET_KEY = settings.SECRET_KEY
+ALGORITHM = settings.ALGORITHM
 
 @router.post("/register")
 async def create_user(user: UserCreate, db: Session = Depends(get_db_connection)):
@@ -95,7 +99,7 @@ async def refresh_token(
 ):
     """
     Updates a pair of tokens.
-    Accepts the old Refresh Token, revokes it (add to the database)
+    Accepts the old Refresh Token in Headers, revokes it (add to the database)
     and generates new Access and Refresh tokens.
     """
     try:
@@ -140,7 +144,7 @@ async def logout(
     x_refresh_token: str = Header(...), db: Session = Depends(get_db_connection)
 ):
     """
-    Ends the user session.
+    Ends the user session. Accepts Refresh Token in Headers
     Retrieves the JTI from the current token and adds it to the database.
     """
     try:
@@ -205,7 +209,14 @@ async def get_users(
 ):
     """
     Extract all users from the database.
-    This endpoint is allowed to users with administrative privileges only.
+    This endpoint is allowed to users with administrative privileges (by access token) only.
     Query parameters: skip, limit.
     """
     return db.query(UserModel).offset(skip).limit(limit).all()
+
+
+@router.get("/user_info", response_model=UserChema)
+async def get_current_user_info(payload: dict = Depends(decode_jwt_token),
+                                db: Session = Depends(get_db_connection)):
+    """Get user info by decoding JWT (access) token."""
+    return get_current_user(payload, db)

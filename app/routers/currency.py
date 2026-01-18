@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Query
 from typing import Annotated, List
 
 from app.exceptions.tokens import InvalidTokenTypeException
-from app.dependencies.security import decode_jwt_token
+from app.core.security import decode_jwt_token
 from app.utils.codes_names import get_codes_names
 from app.utils.actual_rates import get_actual_rates_data
 from app.exceptions.currency import InvalidCurrencyCodeException

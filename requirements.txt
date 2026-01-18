@@ -30,14 +30,12 @@ httpx==0.28.1
 idna==3.11
 iniconfig==2.3.0
 iso4217parse==0.6.2
-Jinja2==3.1.6
+jwt==1.4.0
 kombu==5.6.2
 loguru==0.7.3
 MarkupSafe==3.0.3
 mypy_extensions==1.1.0
-numpy==2.4.1
 packaging==25.0
-pandas==2.3.3
 pathspec==1.0.3
 platformdirs==4.5.1
 pluggy==1.6.0
