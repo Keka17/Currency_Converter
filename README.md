@@ -42,7 +42,7 @@ API-сервис для конвертации валют, построенны�
 ## Установка и запуск (локальный)
 1. __Клонирование репозитория__
 
-       git clone https://github.com/Keka17/Currency_Converter
+       git clone https://github.com/Keka17/Currency_Converter.git
 
        cd Currency_Converter
    
