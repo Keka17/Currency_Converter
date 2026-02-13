@@ -33,32 +33,22 @@ async def get_currencies_list(
 
 
 @router.get("/actual_rates")
-async def get_actual_rates(current_user: UserModel = Depends(get_current_user)):
+async def get_actual_rates(
+        code: Annotated[List[str] | None, Query()] = None,
+        current_user: UserModel = Depends(get_current_user)):
     """
     Retrieving current exchange rates against the US dollar. \n
+    Query parameter: ISO currency code. \n
     Protected endpoint: a valid access token in the Authorization header required.
     """
     rates_data = get_actual_rates_data()
 
-    return {
-        "message": "Actual currencies rates. Base currency: 💵 USD (1 USD = value [Currency])",
-        "rates": rates_data,
-    }
-
-
-@router.get("/actual_rate")
-async def get_actual_rate(
-    code: Annotated[List[str] | None, Query()] = None,
-    current_user: UserModel = Depends(get_current_user),
-):
-    """
-    Retrieving current exchange rate of the specified currencies against the US dollar. \n
-    Request parameter: list of currency codes. \n
-    Protected endpoint: a valid access token in the Authorization header required.
-    """
     if not code:
-        raise EmptyCurrencyCodeException()
-    rates_data = get_actual_rates_data()
+        return {
+            "message": "Actual currencies rates. Base currency: 💵 USD (1 USD = value [Currency])",
+            "rates": rates_data,
+        }
+
     codes_list = list(rates_data.keys())
 
     invalid_codes = []
