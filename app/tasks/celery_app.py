@@ -14,9 +14,7 @@ Redis is used as:
 - a message broker for task distribution between the application and workers;
 - a backendfor storing results, which keeps track of task execution status.
 """
-celery_app = Celery(
-    "worker", broker=settings.REDIS_URL, backend=settings.REDIS_URL
-)
+celery_app = Celery("worker", broker=settings.REDIS_URL, backend=settings.REDIS_URL)
 
 celery_app.autodiscover_tasks(["app.tasks"])
 celery_app.conf.timezone = "UTC"

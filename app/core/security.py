@@ -15,6 +15,9 @@ ALGORITHM = settings.ALGORITHM
 ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 REFRESH_TOKEN_EXPIRE_DAYS = settings.REFRESH_TOKEN_EXPIRE_DAYS
 
+# Extracts the token from the Authorization header
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+
 
 def create_jwt_token(
     data: dict, expires_delta: timedelta, token_type: str, include_jti: bool = False
@@ -52,10 +55,6 @@ def create_refresh_token(data: dict):
     )
 
 
-# Extracts the token from the Authorization header
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
-
-
 def decode_jwt_token(token: str = Depends(oauth2_scheme)) -> dict:
     """
     Extracts user information from the access token.
@@ -63,7 +62,7 @@ def decode_jwt_token(token: str = Depends(oauth2_scheme)) -> dict:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
-    except jwt.ExpiredSignatureError:
+    except jwt.exceptions.ExpiredSignatureError:
         raise TokenExpiredException()
-    except jwt.InvalidTokenError:
+    except jwt.exceptions.InvalidTokenError:
         raise InvalidTokenException()

@@ -1,59 +1,53 @@
 import pytest
-from fastapi.testclient import TestClient
+from httpx import ASGITransport, AsyncClient
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 
 from app.main import app
 from app.database.database import get_db_connection
+from app.database.models import Base
+from app.core.config import get_settings
 
-import os
-from dotenv import load_dotenv
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
+settings = get_settings()
 
-from app.models.models import Base
-
-load_dotenv()
-
-TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL")
-
-engine = create_engine(TEST_DATABASE_URL)
-
-TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+TEST_DATABASE_URL = settings.TEST_DATABASE_URL
 
 
-@pytest.fixture(scope="session", autouse=True)
-def setup_database():
-    """Create tables once for the entire test session"""
-    Base.metadata.create_all(bind=engine)
-    yield
-    Base.metadata.drop_all(bind=engine)
+@pytest.fixture(scope="session")
+async def async_db_engine():
+    """Drop all database every time when test complete."""
+    engine = create_async_engine(TEST_DATABASE_URL)
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    yield engine
+
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
 
 
-@pytest.fixture
-def db_session():
+@pytest.fixture(scope="function")
+async def async_session(async_db_engine):
     """Create a fresh session for each test"""
-    connection = engine.connect()
-    transaction = connection.begin()
-    session = TestSessionLocal(bind=connection)
+    engine = create_async_engine(TEST_DATABASE_URL)
+    async with engine.connect() as connection:
+        transaction = await connection.begin()
+        async with AsyncSession(bind=connection, expire_on_commit=False) as session:
+            yield session
 
-    yield session
-
-    session.close()
-    transaction.rollback()
-    connection.close()
+            await transaction.rollback()
 
 
 @pytest.fixture
-def client(db_session):
+async def client(async_session):
     """Replaces the db dependency."""
 
-    def override_get_db():
-        try:
-            yield db_session
-        finally:
-            pass  # Session will be closed by the db_session fixture
+    async def override_get_db():
+        yield async_session
 
     app.dependency_overrides[get_db_connection] = override_get_db
-    with TestClient(app) as c:
-        yield c
+
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as ac:
+        yield ac
 
     app.dependency_overrides.clear()

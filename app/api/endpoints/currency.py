@@ -1,26 +1,25 @@
 from fastapi import APIRouter, Depends, Query
 from typing import Annotated, List
 
-from app.exceptions.tokens import InvalidTokenTypeException
-from app.core.security import decode_jwt_token
 from app.utils.codes_names import get_codes_names
 from app.utils.actual_rates import get_actual_rates_data
 from app.exceptions.currency import InvalidCurrencyCodeException
-from app.schemas.currency import Converter
+from app.api.schemas.currency import Converter
+from app.dependencies.dependencies import get_current_user
+from app.database.models import User as UserModel
 
 
 router = APIRouter(prefix="/currency", tags=["Currency"])
 
 
 @router.get("/list")
-async def get_currencies_list(payload: dict = Depends(decode_jwt_token)) -> dict:
+async def get_currencies_list(
+    current_user: UserModel = Depends(get_current_user),
+) -> dict:
     """
     Retrieves a list of available currenices.
     Only accessible with a valid Access Token in the Authorization header.
     """
-    if payload.get("token_type") != "access":
-        raise InvalidTokenTypeException(expected_type="access")
-
     full_names_map = get_codes_names()
 
     return {
@@ -30,14 +29,11 @@ async def get_currencies_list(payload: dict = Depends(decode_jwt_token)) -> dict
 
 
 @router.get("/actual_rates")
-async def get_actual_rates(payload: dict = Depends(decode_jwt_token)):
+async def get_actual_rates(current_user: UserModel = Depends(get_current_user)):
     """
     Returns current exchange rates relative to the USD.
     Only accessible with a valid Access Token in the Authorization header
     """
-    if payload.get("token_type") != "access":
-        raise InvalidTokenTypeException(expected_type="access")
-
     rates_data = get_actual_rates_data()
     return {
         "message": "Actual currencies rates. Base currency: 💵 USD (1 USD = value [Currency])",
@@ -48,17 +44,13 @@ async def get_actual_rates(payload: dict = Depends(decode_jwt_token)):
 @router.get("/actual_rate")
 async def get_actual_rate(
     codes: Annotated[List[str] | None, Query()] = None,
-    payload: dict = Depends(decode_jwt_token),
+    current_user: UserModel = Depends(get_current_user),
 ):
     """
     Returns the current exchange rate of the specified currency/ies relative to the USD.
     Request parameter: list of currency/ies code/s.
-
     Only accessible with a valid Access Token in the Authorization header.
     """
-    if payload.get("token_type") != "access":
-        raise InvalidTokenTypeException(expected_type="access")
-
     rates_data = get_actual_rates_data()
 
     codes_list = list(rates_data.keys())
@@ -81,7 +73,7 @@ async def get_actual_rate(
 
 @router.post("/converter")
 async def currency_converter(
-    data: Converter, payload: dict = Depends(decode_jwt_token)
+    data: Converter, current_user: UserModel = Depends(get_current_user)
 ):
     """
     Converts one currency to another.
@@ -93,9 +85,6 @@ async def currency_converter(
 
     Only accessible with a valid Access Token in the Authorization header.
     """
-
-    if payload.get("token_type") != "access":
-        raise InvalidTokenTypeException(expected_type="access")
 
     rates_data = get_actual_rates_data()
 

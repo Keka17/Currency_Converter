@@ -1,16 +1,12 @@
 from celery import shared_task
 import requests
-import os
 import json
-from dotenv import load_dotenv
-
-load_dotenv()
 from app.core.config import get_settings
 
 settings = get_settings()
 
 API_KEY = settings.API_KEY
-EXTERNAL_API_URL = "https://currencyapi.net/api/v1/rates"
+EXTERNAL_API_URL = settings.EXTERNAL_API_URL
 
 
 @shared_task(ignore_results=True)

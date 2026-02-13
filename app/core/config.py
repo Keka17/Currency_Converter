@@ -1,11 +1,8 @@
 from functools import lru_cache
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    app_name: str = "Currency Converter API"
-    debug: bool = True
-
     # Database
     DATABASE_URL: str
     TEST_DATABASE_URL: str | None = None
@@ -13,18 +10,21 @@ class Settings(BaseSettings):
     # JWT | Security
     SECRET_KEY: str
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 200
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
     # External API
     API_KEY: str
+    EXTERNAL_API_URL: str = "https://currencyapi.net/api/v1/rates"
 
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",  # For extra env variable (Docker-specific)
+    )
 
 
 @lru_cache

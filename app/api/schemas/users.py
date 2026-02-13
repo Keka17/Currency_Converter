@@ -2,6 +2,14 @@ from pydantic import BaseModel, ConfigDict, field_validator
 import re
 
 
+def example_user_in(schema: dict) -> None:
+    schema["example"] = {"username": "Darth Vader", "password": "Str0ngP@$$w678"}
+
+
+def example_user_out(schema: dict) -> None:
+    schema["example"] = {"username": "Darth Vader", "id": 66, "is_admin": True}
+
+
 class UserBase(BaseModel):
     username: str
 
@@ -24,14 +32,18 @@ class UserCreate(UserBase):
                 "at least one number and  special characters (@$!%*?&)"
             )
 
+    model_config = ConfigDict(json_schema_extra=example_user_in)
+
 
 class User(UserBase):
     id: int
     is_admin: bool
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, json_schema_extra=example_user_out)
 
 
 class UserLogin(BaseModel):
     username: str
     password: str
+
+    model_config = ConfigDict(json_schema_extra=example_user_in)
