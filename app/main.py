@@ -1,5 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
+from fastapi.templating import Jinja2Templates
+from starlette.responses import HTMLResponse
 
 from app.api.endpoints import users, currency, auth
 from app.exceptions.base import AppException
@@ -47,7 +49,18 @@ logger.add(
 )
 
 
-app = FastAPI()
+app = FastAPI(
+    title="Currency Converter API",
+    swagger_ui_parameters={
+        "defaultModelsExpandDepth": -1,  # Hide models section by default
+        "docExpansion": "none",  # Collapse all sections by default,
+        "displayRequestDuration": True,
+        "tryItOutEnabled": True,
+        "persistAuthorization": True,
+    },
+)
+
+templates = Jinja2Templates(directory="app/templates")
 
 app.middleware("http")(loguru_middleware)
 app.add_exception_handler(AppException, app_exception_handler)
@@ -58,6 +71,6 @@ app.include_router(currency.router)
 app.include_router(auth.router)
 
 
-@app.get("/")
-def root():
-    return {"message": "API is running!"}
+@app.get("/", response_class=HTMLResponse, tags=["Frontend"])
+async def root(request: Request):
+    return templates.TemplateResponse(request=request, name="home.html")

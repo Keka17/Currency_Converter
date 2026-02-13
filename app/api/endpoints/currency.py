@@ -21,6 +21,7 @@ async def get_currencies_list(
     Only accessible with a valid Access Token in the Authorization header.
     """
     full_names_map = get_codes_names()
+    del full_names_map["updated"]
 
     return {
         "message": "Available currencies for conversion",
@@ -52,7 +53,6 @@ async def get_actual_rate(
     Only accessible with a valid Access Token in the Authorization header.
     """
     rates_data = get_actual_rates_data()
-
     codes_list = list(rates_data.keys())
 
     invalid_codes = []
@@ -87,6 +87,7 @@ async def currency_converter(
     """
 
     rates_data = get_actual_rates_data()
+    del rates_data["updated"]
 
     codes_list = list(rates_data.keys())
 

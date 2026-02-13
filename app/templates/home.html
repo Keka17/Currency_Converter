@@ -1,10 +1,188 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CurrencyConverter API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+        }
 
+        header,
+        main,
+        footer {
+            text-align: center;
+        }
+
+        header {
+            background-color: #fafafa;
+            color: white;
+            padding: 2rem 0;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .content {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .image-container {
+            margin: 2rem 0;
+            padding: 1rem;
+        }
+
+        .image-container img {
+            max-width: 40%;
+            height: auto;
+        }
+
+        .text-content {
+            line-height: 1.6;
+            margin: 1.5rem 0;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #1143c2;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .button:active {
+            transform: translateY(0);
+            transition: all 0.1s ease;
+        }
+
+        footer {
+            background-color: #DCDCDC;
+            color: #454745;
+            padding: 1.5rem 0;
+        }
+
+        h2 {
+            color: #100aa6;
+            margin: 0;
+            font-size: 2.5rem;
+        }
+
+        p {
+            margin: 1rem 0;
+            font-size: 1.1rem;
+        }
+
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            width: 200px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #85a3ff;
+        }
+
+        .feature-card i {
+            font-size: 2rem;
+            color: #28a745;
+            margin-bottom: 1rem;
+        }
+
+        .api-example {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            text-align: left;
+            font-family: monospace;
+            border-left: 4px solid #85a3ff;
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <div class="content">
+            <div class="text-content" style="margin-top: -10px;">
+                <h2>Welcome to the <b>CurrencyConverter API!</b></h2>
+                <p>A powerful and simple API for <b>real-time currency conversion</b> using current market rates.</p>
+            </div>
+
+            <div class="image-container" style="margin-top: -10px" ;>
+                <img src=https://gencap.com.au/wp-content/uploads/2022/03/Currency-exchange-scaled.jpg alt="Currency Exchange Illustration">
+            </div>
+
+            <div class="features">
+                <div class="feature-card">
+                    <i class="bi bi-arrow-left-right"></i>
+                    <h3>150+ Currencies</h3>
+                    <p>Support for all global currencies and cryptocurrencies</p>
+                </div>
+                <div class="feature-card">
+                    <i class="bi bi-lightning-charge"></i>
+                    <h3>Real time</h3>
+                    <p>Courses are updated every 3 hours</p>
+                </div>
+            </div>
+
+            <div class="text-content" style="margin-top: -10px;">
+                <div class="api-example">
+                    <strong>Example request:</strong><br>
+                    GET /api/currency/converter<br>
+                    <br>
+                    <strong>Request:</strong><br>
+                    {<br>
+                    &nbsp;&nbsp;"code_1": "USD",<br>
+                    &nbsp;&nbsp;"code_2": "CNY" ,<br>
+                    &nbsp;&nbsp;"k": "1" <br>
+                    }
+                    <br>
+                    <strong>Response:</strong><br>
+                    {<br>
+                    &nbsp;&nbsp;"message": "1.0 USD - 6.913 CNY"<br>
+                    }
+                </div>
+
+                <p>
+                    Get started with the API right now via interactive documentation:
+                </p>
+                <a href="http://localhost:8000/docs" class="button">Open Swagger UI</a>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2026 <b>CurrencyConverter API</b> | <a href="https://github.com/Keka17/Currency_Converter" target="_blank" style="color: #181A1E;"><i class="bi bi-github"></i> GitHub</a> </p>
+    </footer>
 </body>
+
 </html>
