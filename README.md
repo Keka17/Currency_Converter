@@ -200,8 +200,7 @@ Cоздайте файл `.env.docker` в корне проекта, запол�
 
 * ### Currency (protected)
   * `GET /currency/list`: Получение списка доступных для конвертации валют с расшифровкой ISO-кодов.
-  * `GET /currency/actual_rates`: Получение актульных курсов для всех доступных валют.
-  * `GET /currency/actual_rate`: Актуальные курсы для конкретных валют (указываются через параметр запроса `code`).
+  * `GET /currency/actual_rates`: Получение актульных курсов для всех доступных валют. Параметр запроса `code` вернет актуальный курс для конкретной валюты.
   * `POST /currency/converter`: Конвертация валют.
 
 * ### Authentication
@@ -244,9 +243,10 @@ __Пример ожидаемой структуры__:
   
   <img width="848" height="598" alt="actual rates" src="https://github.com/user-attachments/assets/26d16d6f-b826-48fc-8330-e161425b136b" />
 
-* `GET /currency/actual_rate?code=PLN&code=TRY`
+* `GET /currency/actual_rates?code=CZK&code=JPY`
 
-<img width="650" height="420" alt="query param" src="https://github.com/user-attachments/assets/18a82cba-8750-4749-a71e-3ed30184fbed" />
+<img width="747" height="394" alt="actual rates + query" src="https://github.com/user-attachments/assets/6f75711c-ab17-4008-81b1-b1ed20793b05" />
+
 
 * `POST /currency/converter`
   
