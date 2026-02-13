@@ -14,6 +14,6 @@ class EmptyCurrencyCodeException(AppException):
     def __init__(self):
         super().__init__(
             status_code=422,
-            message="Missing required query parameter: codes",
+            message="Missing required query parameter: code",
             error_code="UNPROCESSABLE_ENTITY",
         )
