@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, Header
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.responses import JSONResponse
 
 from app.database.database import get_db_connection
-from app.api.schemas.users import UserCreate, UserLogin
+from app.api.schemas.users import UserCreate
 
 from app.services.auth import AuthService
 
@@ -25,11 +26,14 @@ async def create_user(
 
 
 @router.post("/login")
-async def login(user: UserLogin, session: AsyncSession = Depends(get_db_connection)):
+async def login(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    session: AsyncSession = Depends(get_db_connection),
+):
     """
     Verifying credentials to get a JWT token.
     """
-    return await AuthService.login(user, session)
+    return await AuthService.login(form_data, session)
 
 
 @router.post("/refresh")
