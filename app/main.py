@@ -71,6 +71,9 @@ app.include_router(currency.router)
 app.include_router(auth.router)
 
 
-@app.get("/", response_class=HTMLResponse, tags=["Frontend"])
+@app.get(
+    "/", response_class=HTMLResponse, summary="API landing page", tags=["Frontend"]
+)
 async def root(request: Request):
+    """Displays HTML page."""
     return templates.TemplateResponse(request=request, name="home.html")

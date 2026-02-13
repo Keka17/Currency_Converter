@@ -17,8 +17,8 @@ async def get_currencies_list(
     current_user: UserModel = Depends(get_current_user),
 ) -> dict:
     """
-    Retrieves a list of available currenices.
-    Only accessible with a valid Access Token in the Authorization header.
+    Retrieving a list of available currenices. \n
+    Protected endpoint: a valid access token in the Authorization header required.
     """
     full_names_map = get_codes_names()
     del full_names_map["updated"]
@@ -32,8 +32,8 @@ async def get_currencies_list(
 @router.get("/actual_rates")
 async def get_actual_rates(current_user: UserModel = Depends(get_current_user)):
     """
-    Returns current exchange rates relative to the USD.
-    Only accessible with a valid Access Token in the Authorization header
+    Retrieving current exchange rates against the US dollar. \n
+    Protected endpoint: a valid access token in the Authorization header required.
     """
     rates_data = get_actual_rates_data()
     return {
@@ -48,9 +48,9 @@ async def get_actual_rate(
     current_user: UserModel = Depends(get_current_user),
 ):
     """
-    Returns the current exchange rate of the specified currency/ies relative to the USD.
-    Request parameter: list of currency/ies code/s.
-    Only accessible with a valid Access Token in the Authorization header.
+    Retrieving current exchange rate of the specified currencies against the US dollar. \n
+    Request parameter: list of currency codes. \n
+    Protected endpoint: a valid access token in the Authorization header required.
     """
     rates_data = get_actual_rates_data()
     codes_list = list(rates_data.keys())
@@ -66,7 +66,7 @@ async def get_actual_rate(
     specified_rates = {c: rates_data[c] for c in codes if c in rates_data}
 
     return {
-        "message": f"Current {codes} to dollar exchange rate",
+        "message": f"Current {codes} to USD exchange rate",
         "rate": specified_rates,
     }
 
@@ -76,14 +76,13 @@ async def currency_converter(
     data: Converter, current_user: UserModel = Depends(get_current_user)
 ):
     """
-    Converts one currency to another.
-    Parameters:
-    code_1: name of the currency to find out the price of;
-    code_2: name of the currency to find out the price of
-    the first currency in;
-    k: amount of the first currency.
+    Converting one currency to another. Parameters: \n
+    **code_1**: name of the currency to find out the price of; \n
+    **code_2**: name of the currency to find out the price of
+    the first currency in; \n
+    **k**: amount of the first currency.\n
 
-    Only accessible with a valid Access Token in the Authorization header.
+    Protected endpoint: a valid access token in the Authorization header required.
     """
 
     rates_data = get_actual_rates_data()

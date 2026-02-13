@@ -41,6 +41,10 @@ async def refresh(
     x_refresh_token: str = Header(...),
     session: AsyncSession = Depends(get_db_connection),
 ):
+    """
+    Updating a pair of tokens. The refresh token in the headers required. \n\n
+    After that, the used token is revoked and added in the database.
+    """
     return await AuthService.refresh(x_refresh_token, session)
 
 
@@ -49,6 +53,10 @@ async def logout(
     x_refresh_token: str = Header(...),
     session: AsyncSession = Depends(get_db_connection),
 ):
+    """
+    User logout from the system. The refresh token in the headers required. \n\n
+    After that, the used token is revoked and added in the database.
+    """
     await AuthService.logout(x_refresh_token, session)
 
     return {"message": "Logged out successfully."}

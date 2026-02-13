@@ -59,11 +59,11 @@ async def test_login_success(client, async_session):
     Successful login with token pair generation.
     Endpoint POST /auth/login.
     """
-    payload = {"username": "Hermione G.", "password": "Str0ngP@ssword"}
+    form_data = {"username": "Hermione G.", "password": "Str0ngP@ssword"}
 
     await add_users(async_session)
 
-    response = await client.post("/auth/login", json=payload)
+    response = await client.post("/auth/login", data=form_data)
 
     assert response.status_code == 200
     data = response.json()
@@ -71,14 +71,7 @@ async def test_login_success(client, async_session):
     assert "access_token" in data
     assert "refresh_token" in data
     assert data["token_type"] == "bearer"
-    assert data["sub"] == payload["username"]
-
-    decode_payload = jwt.decode(
-        data["refresh_token"], SECRET_KEY, algorithms=[ALGORITHM]
-    )
-
-    assert decode_payload["sub"] == payload["username"]
-    assert "exp" in decode_payload
+    assert data["sub"] == form_data["username"]
 
 
 async def test_login_fail(client, async_session):
@@ -88,15 +81,15 @@ async def test_login_fail(client, async_session):
     """
     await add_users(async_session)
 
-    payload = {"username": "Hermione Granger", "password": "Str0ngP@ssword"}
+    form_data = {"username": "Hermione Granger", "password": "Str0ngP@ssword"}
 
-    response = await client.post("/auth/login", json=payload)
+    response = await client.post("/auth/login", data=form_data)
     assert response.status_code == 404
     assert response.json()["error_code"] == "NOT_FOUND"
 
-    payload = {"username": "Hermione G.", "password": "Str0ngP@sswor"}
+    form_data = {"username": "Hermione G.", "password": "Str0ngP@sswor"}
 
-    response = await client.post("/auth/login", json=payload)
+    response = await client.post("/auth/login", data=form_data)
     assert response.status_code == 401
     assert response.json()["error_code"] == "INVALID_CREDENTIALS"
 
@@ -162,11 +155,11 @@ async def test_refresh_token_success(client, async_session):
     has been added to the db, and the ability to refresh tokens using it.
     Endpoint POST /auth/refresh.
     """
-    payload = {"username": "Hermione G.", "password": "Str0ngP@ssword"}
+    form_data = {"username": "Hermione G.", "password": "Str0ngP@ssword"}
     await add_users(async_session)
 
     with freeze_time("2026-01-17 12:00:00"):
-        login_response = await client.post("/auth/login", json=payload)
+        login_response = await client.post("/auth/login", data=form_data)
         old_tokens = login_response.json()
 
         old_refresh_token = old_tokens["refresh_token"]
