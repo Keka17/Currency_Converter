@@ -39,6 +39,7 @@ async def get_actual_rates(current_user: UserModel = Depends(get_current_user)):
     Protected endpoint: a valid access token in the Authorization header required.
     """
     rates_data = get_actual_rates_data()
+
     return {
         "message": "Actual currencies rates. Base currency: 💵 USD (1 USD = value [Currency])",
         "rates": rates_data,
