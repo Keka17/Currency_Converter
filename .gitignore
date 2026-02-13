@@ -1,7 +1,6 @@
 .env
 .env.local
 .env.*.local
-.env.docker
 
 logs
 venv/
@@ -13,3 +12,4 @@ pytest_cache/
 .idea
 
 celerybeat-schedule.db
+/.env.docker

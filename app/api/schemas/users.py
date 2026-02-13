@@ -6,6 +6,10 @@ def example_user_out(schema: dict) -> None:
     schema["example"] = {"username": "Darth Vader", "id": 66, "is_admin": True}
 
 
+def example_user_in(schema: dict) -> None:
+    schema["example"] = {"username": "Darth Vader", "password": "Str0ngP@$$w678"}
+
+
 class UserBase(BaseModel):
     username: str
 
@@ -27,6 +31,8 @@ class UserCreate(UserBase):
                 "minimum length - 12 characters, upper and lower case letters, "
                 "at least one number and  special characters (@$!%*?&)"
             )
+
+    model_config = ConfigDict(json_schema_extra=example_user_in)
 
 
 class User(UserBase):

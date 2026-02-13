@@ -1,0 +1,74 @@
+services:
+  api:
+    container_name: converter_api
+    build: ./
+    depends_on:
+      - db
+      - redis
+    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000'
+    volumes:
+      - ./app:/src/app
+      - ./alembic.ini:/src/alembic.ini
+    ports:
+      - ${APP_PORT}:8000
+    restart: always
+    env_file:
+      - .env.docker
+
+  db:
+    container_name: converter_postgres
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=${POSTGRES_DATABASE}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+  redis:
+    container_name: converter_redis
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+  worker:
+    container_name: converter_celery_worker
+    build: ./
+    depends_on:
+      - redis
+      - db
+    command: celery -A app.tasks.celery_app.celery_app worker --loglevel=info
+    volumes:
+      - ./app:/src/app
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    env_file:
+      - .env.docker
+
+  beat:
+    container_name: converter_celery_beat
+    build: ./
+    depends_on:
+      - redis
+      - db
+    command: celery -A app.tasks.celery_app.celery_app beat --loglevel=info
+    volumes:
+      - ./app:/src/app
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    env_file:
+      - .env.docker
+
+volumes:
+  postgres_data:
+
+
+
+
+
+

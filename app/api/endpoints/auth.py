@@ -21,7 +21,7 @@ async def create_user(
     await AuthService.register(user, session)
 
     return JSONResponse(
-        status_code=201, content={"message": "You have successfully registered! 😊"}
+        status_code=200, content={"message": "You have successfully registered! 😊"}
     )
 
 
