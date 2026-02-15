@@ -3,10 +3,7 @@ from typing import Annotated, List
 
 from app.utils.codes_names import get_codes_names
 from app.utils.actual_rates import get_actual_rates_data
-from app.exceptions.currency import (
-    InvalidCurrencyCodeException,
-    EmptyCurrencyCodeException,
-)
+from app.exceptions.currency import InvalidCurrencyCodeException
 from app.api.schemas.currency import Converter
 from app.dependencies.dependencies import get_current_user
 from app.database.models import User as UserModel
@@ -21,7 +18,7 @@ async def get_currencies_list(
 ) -> dict:
     """
     Retrieving a list of available currenices. \n
-    Protected endpoint: a valid access token in the Authorization header required.
+    **Protected endpoint**: a valid access token in the Authorization header required.
     """
     full_names_map = get_codes_names()
     del full_names_map["updated"]
@@ -34,12 +31,13 @@ async def get_currencies_list(
 
 @router.get("/actual_rates")
 async def get_actual_rates(
-        code: Annotated[List[str] | None, Query()] = None,
-        current_user: UserModel = Depends(get_current_user)):
+    code: Annotated[List[str] | None, Query()] = None,
+    current_user: UserModel = Depends(get_current_user),
+):
     """
     Retrieving current exchange rates against the US dollar. \n
-    Query parameter: ISO currency code. \n
-    Protected endpoint: a valid access token in the Authorization header required.
+    **Query parameter**: ISO currency code (upper or lower case). \n
+    **Protected endpoint**: a valid access token in the Authorization header required.
     """
     rates_data = get_actual_rates_data()
 
@@ -50,19 +48,20 @@ async def get_actual_rates(
         }
 
     codes_list = list(rates_data.keys())
+    codes_query = [c.upper() for c in code]
 
     invalid_codes = []
-    for _ in code:
+    for _ in codes_query:
         if _ not in codes_list:
             invalid_codes.append(_)
 
     if invalid_codes:
         raise InvalidCurrencyCodeException(invalid_codes=invalid_codes)
 
-    specified_rates = {c: rates_data[c] for c in code if c in rates_data}
+    specified_rates = {c: rates_data[c] for c in codes_query if c in rates_data}
 
     return {
-        "message": f"Current {code} to USD exchange rate",
+        "message": f"Current {codes_query} to USD exchange rate",
         "rate": specified_rates,
     }
 
@@ -78,7 +77,7 @@ async def currency_converter(
     the first currency in; \n
     **k**: amount of the first currency.\n
 
-    Protected endpoint: a valid access token in the Authorization header required.
+    **Protected endpoint**: a valid access token in the Authorization header required.
     """
 
     rates_data = get_actual_rates_data()

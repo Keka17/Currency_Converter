@@ -13,6 +13,7 @@ def get_actual_rates_data():
             data = json.load(f)
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
+        return None
 
     unix_timestamp = data["updated"]
     utc_datetime = datetime.fromtimestamp(unix_timestamp, tz=ZoneInfo("UTC"))

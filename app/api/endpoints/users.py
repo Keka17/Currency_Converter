@@ -14,7 +14,7 @@ router = APIRouter(prefix="/users", tags=["Users"])
 async def get_current_user_info(current_user: UserModel = Depends(get_current_user)):
     """
     Getting information about the current authenticated user.  \n
-    Protected endpoint: a valid access token in the Authorization header required.
+    **Protected endpoint**: a valid access token in the Authorization header required.
     """
     return current_user
 
@@ -26,7 +26,7 @@ async def get_users(
 ):
     """
     Getting a list of all registered users.  \n
-    Protected endpoint with strict access rights: only available to the admin.
+    **Protected** endpoint with strict access rights: only available to the admin.
     """
     return await UserService.get_users(session)
 
@@ -39,7 +39,7 @@ async def delete_user(
 ):
     """
     Deleting of a specific user by their id. \n
-    Protected endpoint with strict access rights: only available to the admin.
+    **Protected** endpoint with strict access rights: only available to the admin.
     """
     await UserService.delete_user(user_id, admin, session)
 
