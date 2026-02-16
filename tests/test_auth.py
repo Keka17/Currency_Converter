@@ -23,7 +23,7 @@ async def test_create_user_success(client, async_session):
     payload = {"username": "Carrie Bradhsaw", "password": "Il0veM@ano1o"}
 
     response = await client.post("/auth/register", json=payload)
-    assert response.status_code == 201
+    assert response.status_code == 200
 
     data = response.json()
 

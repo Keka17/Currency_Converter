@@ -187,7 +187,7 @@ class TestCurrenciesActualRates(unittest.TestCase):
 
 class TestSpecificCurrencyRate(unittest.TestCase):
     """
-    Test for getting specific currency rates: GET /currency/actual_rate?code.
+    Test for getting specific currency rates: GET /currency/actual_rates?code=.
     Another test return Error 400: Invalid code.
     """
 
@@ -206,7 +206,7 @@ class TestSpecificCurrencyRate(unittest.TestCase):
         target_codes = ["EUR", "RUB"]
 
         response = await client.get(
-            "/currency/actual_rate", params={"codes": target_codes}, headers=headers
+            "/currency/actual_rates", params={"code": target_codes}, headers=headers
         )
 
         app.dependency_overrides.clear()
@@ -239,7 +239,7 @@ class TestSpecificCurrencyRate(unittest.TestCase):
         target_code = ["RU"]
 
         response = await client.get(
-            "/currency/actual_rate", params={"codes": target_code}, headers=headers
+            "/currency/actual_rates", params={"code": target_code}, headers=headers
         )
 
         app.dependency_overrides.clear()
