@@ -199,7 +199,7 @@ __Примечание__: этот способ запуска __быстрее_
   * `DELETE /users/{user_id}`: Удаление конкретного пользователя, доступно только админу.
 
 * ### Currency (protected)
-  * `GET /currency/list`: Получение списка доступных для конвертации валют с расшифровкой ISO-кодов.
+  * `GET /currency/list`: Получение списка доступных для конвертации валют с расшифровкой ISO-кодов. Параметр запроса `code` вернет расшифровку названия валюты.
   * `GET /currency/actual_rates`: Получение актульных курсов для всех доступных валют. Параметр запроса `code` вернет актуальный курс для конкретной валюты.
   * `POST /currency/converter`: Конвертация валют.
 
@@ -229,23 +229,30 @@ pytest
    * Ключ `"updated"`: дата последнего обновления данных.
    * Остальные ключи: ISO-код валют, где значением является курс к USD (float).
 
-__Пример ожидаемой структуры__:
-
-<img width="388" height="112" alt="Excepcted json" src="https://github.com/user-attachments/assets/2c3b8e82-5fe0-4a5f-8d03-6e03a77bc758" />
+    __Пример ожидаемой структуры__:
+    
+    <img width="388" height="112" alt="Expected json" src="https://github.com/user-attachments/assets/2c3b8e82-5fe0-4a5f-8d03-6e03a77bc758" />
 
 ## Примеры запросов (Postman)
 
 * `GET /currency/list`
 
-<img width="854" height="578" alt="rates list" src="https://github.com/user-attachments/assets/ce536d4d-ea63-4187-91d1-7a375df0a9a7" />
+<img width="854" height="578" alt="currencies list" src="https://github.com/user-attachments/assets/ce536d4d-ea63-4187-91d1-7a375df0a9a7" />
+
+
+* `GET /currency/list?code=brl&code=NGN`
+
+<img width="822" height="393" alt="specific currencies list" src="https://github.com/user-attachments/assets/1b4c5144-e065-4c63-b208-aaa4b88cabd5" />
+
 
 * `GET /currency/actual_rates`
   
   <img width="848" height="598" alt="actual rates" src="https://github.com/user-attachments/assets/26d16d6f-b826-48fc-8330-e161425b136b" />
 
+
 * `GET /currency/actual_rates?code=CZK&code=JPY`
 
-<img width="771" height="420" alt="Снимок экрана 2026-02-17 в 17 45 51" src="https://github.com/user-attachments/assets/ea9e9915-2b6d-4de4-ba0e-ac257a2c357d" />
+<img width="771" height="420" alt="actual rates specific" src="https://github.com/user-attachments/assets/ea9e9915-2b6d-4de4-ba0e-ac257a2c357d" />
 
 
 * `POST /currency/converter`
