@@ -42,7 +42,7 @@ def get_flag_from_currency(currency_code):
         if country:
             return country.flag
         else:
-            return None
+            return "📂"
     except AttributeError:
         return None
     except Exception as e:
@@ -58,6 +58,8 @@ def get_currency_name(currency_code):
 
     if result:
         return result[0].name
+
+    return "Undefined"
 
 
 def get_codes_names() -> dict:

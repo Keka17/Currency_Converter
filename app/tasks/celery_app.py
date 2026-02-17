@@ -29,7 +29,9 @@ celery_app.conf.beat_schedule = {
     "exchange_rate_api": {
         "task": get_actual_rates.name,
         # "schedule": crontab(minute='*/5'),  # Launch every 2 minutes (for testing)
-        "schedule": timedelta(hours=3),  # Launch every 3 hours
+        "schedule": timedelta(
+            hours=2
+        ),  # Launch every 2 hours -> 12 requests a day x 30 = 360 requests (free plan allowes up to 500)
     },
 }
 
