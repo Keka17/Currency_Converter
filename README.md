@@ -245,7 +245,7 @@ __Пример ожидаемой структуры__:
 
 * `GET /currency/actual_rates?code=CZK&code=JPY`
 
-<img width="747" height="394" alt="actual rates + query" src="https://github.com/user-attachments/assets/6f75711c-ab17-4008-81b1-b1ed20793b05" />
+<img width="771" height="420" alt="Снимок экрана 2026-02-17 в 17 45 51" src="https://github.com/user-attachments/assets/ea9e9915-2b6d-4de4-ba0e-ac257a2c357d" />
 
 
 * `POST /currency/converter`
