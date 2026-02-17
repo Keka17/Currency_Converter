@@ -14,18 +14,41 @@ router = APIRouter(prefix="/currency", tags=["Currency"])
 
 @router.get("/list")
 async def get_currencies_list(
+    code: Annotated[List[str] | None, Query()] = None,
     current_user: UserModel = Depends(get_current_user),
 ) -> dict:
     """
     Retrieving a list of available currenices. \n
+    **Query parameter**: ISO currency code (upper or lower case). \n
     **Protected endpoint**: a valid access token in the Authorization header required.
     """
     full_names_map = get_codes_names()
     del full_names_map["updated"]
 
+    if not code:
+        return {
+            "message": "Available currencies for conversion",
+            "currencies": full_names_map,
+        }
+
+    codes_list = list(full_names_map.keys())
+    codes_query = [c.upper() for c in code]
+
+    invalid_codes = []
+    for _ in codes_query:
+        if _ not in codes_list:
+            invalid_codes.append(_)
+
+    if invalid_codes:
+        raise InvalidCurrencyCodeException(invalid_codes=invalid_codes)
+
+    specified_currencies = {
+        c: full_names_map[c] for c in codes_query if c in full_names_map
+    }
+
     return {
         "message": "Available currencies for conversion",
-        "currencies": full_names_map,
+        "rate": specified_currencies,
     }
 
 
@@ -60,11 +83,10 @@ async def get_actual_rates(
 
     specified_rates = {c: rates_data[c] for c in codes_query if c in rates_data}
     last_update = {"updated": rates_data["updated"]}
-    
 
     return {
         "message": f"Current {codes_query} to USD exchange rate",
-        "rate": last_update | specified_rates
+        "rate": last_update | specified_rates,
     }
 
 
