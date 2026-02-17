@@ -59,10 +59,12 @@ async def get_actual_rates(
         raise InvalidCurrencyCodeException(invalid_codes=invalid_codes)
 
     specified_rates = {c: rates_data[c] for c in codes_query if c in rates_data}
+    last_update = {"updated": rates_data["updated"]}
+    
 
     return {
         "message": f"Current {codes_query} to USD exchange rate",
-        "rate": specified_rates,
+        "rate": last_update | specified_rates
     }
 
 
